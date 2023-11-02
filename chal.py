@@ -4,91 +4,73 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 def main():
-    st.title("GPTers 부트캠프 챌린지 카운팅🏅")
+    st.title("Trillion Union 카운팅🏅")
 
     # CSV 파일 업로드
-    uploaded_file = st.file_uploader("카카오톡에서 받은 CSV 파일을 업로드하세요.", type=["csv"])
+    uploaded_file = st.file_uploader("카카오톡에서 받은 TXT 파일을 업로드하세요.", type=["csv"])
 
     messages = []
 
-    if uploaded_file:
-        # CSV 파일 읽기 및 'Message' 열을 문자열로 변환
-        df = pd.read_csv(uploaded_file, dtype={"Message": str})
+    import pandas as pd
+import re
+from google.colab import files
 
-        # 'Unnamed: 0' 열 제거
-        if 'Unnamed: 0' in df.columns:
-            df = df.drop(columns='Unnamed: 0')
+def process_kakao_chat_to_ranking(input_txt_content):
+    # Regular expressions to match date and message patterns
+    date_pattern = re.compile(r"--------------- (\d{4}년 \d{1,2}월 \d{1,2}일) .* ---------------")
+    message_pattern = re.compile(r"\[(.*?)\] \[(오전|오후) (\d{1,2}:\d{2})\] (.*)")
 
-        # '오픈채팅봇' 제외
-        df = df[df['User'] != '오픈채팅봇']
+    # Split the content into lines
+    lines = input_txt_content.split('\n')
 
-        # 날짜 형식 변경
-        df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%m/%d')
+    # Extract data from the txt content
+    current_date = None
+    data = []
+    for line in lines:
+        date_match = date_pattern.match(line)
+        if date_match:
+            current_date = date_match.group(1)
+            continue
+        message_match = message_pattern.match(line)
+        if message_match and current_date:
+            name = message_match.group(1)
+            period = message_match.group(2)
+            time = message_match.group(3)
+            content = message_match.group(4)
+            hour, minute = map(int, time.split(':'))
+            if period == "오후" and hour != 12:
+                hour += 12
+            formatted_time = f"{hour:02}:{minute:02}"
+            data.append([name, current_date, formatted_time, content])
 
-        # Message에서 #인증 단어가 있는지 확인하고 cnt 컬럼 생성
-        df['cnt'] = df['Message'].apply(lambda x: 1 if '#인증' in x else 0)
+    # Convert data to a DataFrame
+    df = pd.DataFrame(data, columns=['이름', '날짜', '시간', '내용'])
+    df['날짜'] = df['날짜'].apply(lambda x: '/'.join(x.split(' ')[1:3]).replace('월', '').replace('일', ''))
+    
+    # Filter messages and create the ranking table
+    auth_df = df[df['내용'].str.contains('인증')]
+    total_auth_count = auth_df.groupby('이름').size().reset_index(name='총합')
+    total_auth_count['순위'] = total_auth_count['총합'].rank(ascending=False, method='min').astype(int)
+    daily_auth_count = auth_df.groupby(['이름', '날짜']).size().reset_index(name='날짜별 인증 횟수')
+    pivot_df = daily_auth_count.pivot(index='이름', columns='날짜', values='날짜별 인증 횟수')
+    merged_df = pd.merge(total_auth_count, pivot_df, on='이름', how='left')
+    merged_df.fillna(0, inplace=True)
+    # Convert the floating point numbers to integers
+    for column in merged_df.columns[2:]:
+        merged_df[column] = merged_df[column].astype(int)
+    sorted_df = merged_df.sort_values(by='순위')
+    
+    return sorted_df
 
-        # 어제의 메시지 중 #인증이 포함되어 있고 150자가 넘는 메시지 필터링
-        yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
-        yesterday_messages = df[(df['Date'] == yesterday) & (df['cnt'] == 1) & (df['Message'].str.len() > 50)]
-        yesterday_messages_list = yesterday_messages['Message'].tolist()
-        if len(yesterday_messages_list) >= 5:
-            random_selected_messages = random.sample(yesterday_messages_list, 5)
-        else:
-            random_selected_messages = yesterday_messages_list
-
- 
-
-        # 날짜별로 cnt 합계 계산
-        result_df = df.groupby(['Date', 'User'])['cnt'].sum().reset_index()
-
-        # 최종 결과 데이터프레임 생성
-        final_result_df = result_df.pivot_table(index='User', columns='Date', values='cnt', aggfunc='sum').reset_index()
-
-        # 'User' 열을 제외하고 합산
-        final_result_df['총합'] = final_result_df.drop(columns='User').sum(axis=1)
-
-        # Now that '총합' is available, you can find the top 5 users
-        top_5_users = final_result_df.nlargest(5, '총합')['User'].tolist()
-        top_users_str = ', '.join(top_5_users)
-
-        # 어제 인증을 성공한 멤버 찾기
-        successful_users_yesterday_str = ""
-        if yesterday in final_result_df.columns:
-            successful_users_yesterday = final_result_df[final_result_df[yesterday] > 0]['User'].tolist()
-            if successful_users_yesterday:
-                successful_users_yesterday_str = ', '.join(successful_users_yesterday)
-
-        final_result_df = final_result_df.sort_values(by='총합', ascending=False)
-        final_result_df['순위'] = range(1, len(final_result_df) + 1)
-
-        # 컬럼 순서 조정
-        column_order = ['순위', 'User', '총합'] + sorted([col for col in final_result_df.columns if col not in ['User', '총합', '순위']])
-        final_result_df = final_result_df[column_order]
-        final_result_df.fillna(0, inplace=True)
-
-        # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        messages.append(f"### 🔥 AI 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 정말 AI를 잘 활용하시는군요?")
-        messages.append(f"### 💝 어제 인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
-        
-        # 랜덤하게 선택된 메시지 추가 (불릿 포인트로 나타내기)
-        messages.append(f"### 💬 어제 인증 채팅 랜덤 뽑기")
-        for msg in random_selected_messages:
-            messages.append(f"* {msg}")
-        
-
-        for message in messages:
-            st.markdown(message)
-        
-        # 표와 메시지 사이의 줄바꿈 추가
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
-
-        # 전체 결과 보기
-        st.subheader("전체 결과 보기")
-
-        # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        st.dataframe(final_result_df.reset_index(drop=True))
-
+# Upload the TXT file
+uploaded = files.upload()
+for file_name in uploaded.keys():
+    content = uploaded[file_name].decode('utf-8')
+    result_df = process_kakao_chat_to_ranking(content)
+    # Save the result as CSV
+    output_csv_path = 'result.csv'
+    result_df.to_csv(output_csv_path, index=False, encoding='utf-8-sig')
+    # Download the CSV file
+    files.download(output_csv_path)
 if __name__ == "__main__":
     main()
