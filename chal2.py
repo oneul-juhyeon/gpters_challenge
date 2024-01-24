@@ -132,17 +132,9 @@ def main():
         final_result_df.fillna(0, inplace=True)
 
         # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        messages.append(f"### 🔥 AI 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 정말 AI를 잘 활용하시는군요?")
+        messages.append(f"### 🔥 독서 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 부자 되시겠군요?")
         messages.append(f"### 💝 어제 인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
         
-        # 랜덤하게 선택된 메시지 추가 (불릿 포인트로 나타내기)
-        messages.append(f"### 💬 어제 인증 채팅 랜덤 뽑기")
-        for msg in random_selected_messages:
-            messages.append(f"* {msg}")
-        
-
-        for message in messages:
-            st.markdown(message)
         
         # 표와 메시지 사이의 줄바꿈 추가
         st.markdown("\n\n", unsafe_allow_html=True)
