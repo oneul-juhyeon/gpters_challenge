@@ -136,7 +136,7 @@ def main():
         messages.append(f"### 💝 어제 인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
         
        for message in messages:
-       st.markdown(message)
+           st.markdown(message)
            
         # 표와 메시지 사이의 줄바꿈 추가
         st.markdown("\n\n", unsafe_allow_html=True)
