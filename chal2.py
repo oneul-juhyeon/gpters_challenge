@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import re
 
+
 # 추가된 함수: txt 파일을 csv 형식으로 변환하는 함수
 def process_chat_with_formatted_date_and_seconds(file_contents):
     lines = file_contents.split('\n')
@@ -11,25 +12,36 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
     users = []
     messages = []
     current_date = None
+
     date_pattern = re.compile(r'--------------- (\d{4}년 \d{1,2}월 \d{1,2}일) .+ ---------------')
-    message_pattern = re.compile(r'\[(.+?)\] \[(\d{2}:\d{2})\] (.+)')
-    
+    message_pattern = re.compile(r'\[(.+?)\] \[(오전|오후) (\d{1,2}:\d{2})\] (.+)')
+
     for line in lines:
         date_match = date_pattern.match(line)
         if date_match:
             current_date = date_match.group(1)
             current_date = pd.to_datetime(current_date, format='%Y년 %m월 %d일').strftime('%Y-%m-%d')
             continue
+
         message_match = message_pattern.match(line)
         if message_match and current_date:
             user = message_match.group(1)
-            time = message_match.group(2)
-            message = message_match.group(3)
-            full_datetime = f"{current_date} {time}:00"
+            am_pm = message_match.group(2)
+            time = message_match.group(3)
+            message = message_match.group(4)
+
+            # Convert Korean AM/PM to 24-hour format
+            if am_pm == '오후' and time.split(':')[0] != '12':
+                hour = str(int(time.split(':')[0]) + 12)
+                time = hour + time[time.find(':'):]
+            elif am_pm == '오전' and time.split(':')[0] == '12':
+                time = '00' + time[time.find(':'):]
+            
+            full_datetime = f"{current_date} {time}"
             dates.append(full_datetime)
             users.append(user)
             messages.append(message)
-
+            
     df = pd.DataFrame({
         'Date': dates,
         'User': users,
