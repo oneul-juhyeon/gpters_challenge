@@ -81,7 +81,7 @@ def main():
         df['Date'] = df['Date'].dt.strftime('%m/%d')
 
         # Message에서 #인증 단어가 있는지 확인하고 cnt 컬럼 생성
-        df['cnt'] = df['Message'].apply(lambda x: 1 if '#인증' in x else 0)
+        df['cnt'] = df['Message'].apply(lambda x: 1 if '#데일리인증' in x else 0)
 
         # 어제의 메시지 중 #인증이 포함되어 있고 150자가 넘는 메시지 필터링
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
