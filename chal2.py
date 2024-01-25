@@ -61,7 +61,10 @@ def main():
         st.markdown("😄 트릴리온 커뮤니티 리더 주현영")
 
         st.header("도와준 사람")
-        st.markdown("😍 지피터스 커뮤니티 리더 윤누리(feat.GPT)")
+        st.markdown("😍 지피터스 커뮤니티 리더 윤누리")
+
+        st.header("열일한 노예")
+        st.markdown("👽 Chat GPT")
 
 
     # CSV와 TXT 파일 업로드 지원
