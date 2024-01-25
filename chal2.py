@@ -203,13 +203,13 @@ def main():
         
         # 버튼 생성
         with col1:
-            daily_mission_button = st.button('Daily Mission')
+            daily_mission_button = st.button('데일리미션')
         with col2:
-            exercise_certification_button = st.button('Exercise Certification')
+            exercise_certification_button = st.button('운동인증')
         with col3:
-            declaration_button = st.button('Declare')
+            declaration_button = st.button('선언하기')
         with col4:
-            weekly_mission_button = st.button('Weekly Mission')
+            weekly_mission_button = st.button('주간미션')
 
         # 데일리미션 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         messages.append(f"### 🔥 독서 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 부자 되시겠군요?")
