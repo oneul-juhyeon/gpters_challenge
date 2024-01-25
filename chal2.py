@@ -53,12 +53,17 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
 def main():
     st.title("Trillion 미션 카운팅🏅")
     st.caption("👍 트릴리온 4주 성장 프로세스, 얼마나 잘 참여하고 있나요? 🥰")
+    st.subheader("무엇이든 해낼 수 있는 마법공식, X=72")
+    st.caption("🚀 트릴리온 4주 성장 프로세스란?\n\n ✔️혼자서는 불가능하다고 생각하고\n\n 미뤄왔던 일 4주만에 끝장내기 \n\n ✔️책을 꼭꼭 씹어먹고 삶을 변화시키는 독서습관 만들기 \n\n✔️ 같은 가치관을 가진 사람들과 함께 인사이트 나누기 \n\n🏅무엇이든 이룰 수 있는 마법공식 X=72까지! \n- 조만장자를 꿈꾸는 사람들과 함께 각잡고 성장하자! \n\n🛠️ 트릴리온이 궁금해? : https://blog.naver.com/yoo1104/223322531413")
+
 
     with st.sidebar:
         st.header("트릴리온 3기 폭풍성장 프로세스🔥")
 
         st.header("만든 사람")
         st.markdown("😄 트릴리온 커뮤니티 리더 주현영")
+        st.markdown("❤️ 트릴리온 인스타 : [링크](https://www.instagram.com/trillion_union/)")
+        st.markdown("📗 주현영 블로그 : [링크](https://blog.naver.com/todaygrowth)")
 
         st.header("도와준 사람")
         st.markdown("😍 지피터스 커뮤니티 리더 윤누리")
