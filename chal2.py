@@ -197,6 +197,16 @@ def main():
         final_result_exercise_certification.fillna(0, inplace=True)
 
 
+                
+        # 버튼을 위한 컨테이너 생성
+        button_container = st.container()
+        
+        # 버튼 생성
+        daily_mission_button = button_container.button('Daily Mission')
+        exercise_certification_button = button_container.button('Exercise Certification')
+        declaration_button = button_container.button('Declare')
+        weekly_mission_button = button_container.button('Weekly Mission')
+
         # 데일리미션 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         messages.append(f"### 🔥 독서 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 부자 되시겠군요?")
         messages.append(f"### 💝 어제 데일리인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
