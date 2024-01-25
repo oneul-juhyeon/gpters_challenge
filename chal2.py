@@ -207,6 +207,20 @@ def main():
         declaration_button = button_container.button('Declare')
         weekly_mission_button = button_container.button('Weekly Mission')
 
+        
+        # 버튼을 위한 열 생성
+        col1, col2, col3, col4 = st.columns(4)
+        
+        # 버튼 생성
+        with col1:
+            daily_mission_button = st.button('Daily Mission')
+        with col2:
+            exercise_certification_button = st.button('Exercise Certification')
+        with col3:
+            declaration_button = st.button('Declare')
+        with col4:
+            weekly_mission_button = st.button('Weekly Mission')
+
         # 데일리미션 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         messages.append(f"### 🔥 독서 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 부자 되시겠군요?")
         messages.append(f"### 💝 어제 데일리인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
