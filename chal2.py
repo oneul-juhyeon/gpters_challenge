@@ -212,88 +212,92 @@ def main():
             weekly_mission_button = st.button('주간미션')
 
         # 데일리미션 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        messages.append(f"### 🔥 독서 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 부자 되시겠군요?")
-        messages.append(f"### 💝 어제 데일리인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
-        
-        for message in messages:
-            st.markdown(message)
-           
-        # 표와 메시지 사이의 줄바꿈 추가
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
-
-        # 전체 결과 보기
-        st.subheader("데일리 미션 전체 결과 보기")
-
-        # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        st.dataframe(final_result_df.reset_index(drop=True))
-        
-        # 줄바꿈 추가
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
+        if daily_mission_button:
+            messages.append(f"### 🔥 독서 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 부자 되시겠군요?")
+            messages.append(f"### 💝 어제 데일리인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
+            
+            for message in messages:
+                st.markdown(message)
+               
+            # 표와 메시지 사이의 줄바꿈 추가
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
+    
+            # 전체 결과 보기
+            st.subheader("데일리 미션 전체 결과 보기")
+    
+            # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
+            st.dataframe(final_result_df.reset_index(drop=True))
+            
+            # 줄바꿈 추가
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
 
         # 운동인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        messages = []
-        messages.append(f"### 💪🏻 운동 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버 Top3는 {top_users_exercise_certification}입니다. 몸짱 되시겠군요?")
-        messages.append(f"### ✨ 어제 운동을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_exercise_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
-        
-        for message in messages:
-            st.markdown(message)
+        if exercise_certification_button:
+            messages = []
+            messages.append(f"### 💪🏻 운동 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버 Top3는 {top_users_exercise_certification}입니다. 몸짱 되시겠군요?")
+            messages.append(f"### ✨ 어제 운동을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_exercise_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
             
-        # 표와 메시지 사이의 줄바꿈 추가
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
-
-        # 전체 결과 보기
-        st.subheader("운동 미션 전체 결과 보기")
-
-        # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        st.dataframe(final_result_exercise_certification.reset_index(drop=True))
-
-        # 줄바꿈 추가
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
-        
+            for message in messages:
+                st.markdown(message)
+                
+            # 표와 메시지 사이의 줄바꿈 추가
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
+    
+            # 전체 결과 보기
+            st.subheader("운동 미션 전체 결과 보기")
+    
+            # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
+            st.dataframe(final_result_exercise_certification.reset_index(drop=True))
+    
+            # 줄바꿈 추가
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
+            
         # 선언하기 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        messages = []
-        messages.append(f"### 😲 선언하기를 가장 많이 한 멤버는? \n지금까지 선언을 가장 많이 한 멤버는 {top_users_declaration}입니다. 독보적이시군요?")
-
-        for message in messages:
-            st.markdown(message)
+        if declaration_button:
+            messages = []
+            messages.append(f"### 😲 선언하기를 가장 많이 한 멤버는? \n지금까지 선언을 가장 많이 한 멤버는 {top_users_declaration}입니다. 독보적이시군요?")
+    
+            for message in messages:
+                st.markdown(message)
+                
+            # 표와 메시지 사이의 줄바꿈 추가
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
             
-        # 표와 메시지 사이의 줄바꿈 추가
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
-        
-        # 전체 결과 보기
-        st.subheader("선언하기 전체 결과 보기")
-
-        # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        st.dataframe(final_result_declaration.reset_index(drop=True))
-
-        # 줄바꿈 추가
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
+            # 전체 결과 보기
+            st.subheader("선언하기 전체 결과 보기")
+    
+            # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
+            st.dataframe(final_result_declaration.reset_index(drop=True))
+    
+            # 줄바꿈 추가
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
         
         # 주간미션 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        messages = []
-        messages.append(f"### 👀 주간미션을 가장 많이 한 멤버는? \n지금까지 주간미션을 가장 많이 한 멤버는 {top_users_weekly_mission}입니다. 성공하시겠군요?")
-
-        for message in messages:
-            st.markdown(message)
+        if weekly_mission_button:
+            messages = []
+            messages.append(f"### 👀 주간미션을 가장 많이 한 멤버는? \n지금까지 주간미션을 가장 많이 한 멤버는 {top_users_weekly_mission}입니다. 성공하시겠군요?")
+    
+            for message in messages:
+                st.markdown(message)
+                
+            # 표와 메시지 사이의 줄바꿈 추가
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
             
-        # 표와 메시지 사이의 줄바꿈 추가
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
-        
-        # 전체 결과 보기
-        st.subheader("주간미션 전체 결과 보기")
-
-        # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        st.dataframe(final_result_weekly_mission.reset_index(drop=True))
+            # 전체 결과 보기
+            st.subheader("주간미션 전체 결과 보기")
+    
+            # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
+            st.dataframe(final_result_weekly_mission.reset_index(drop=True))
 
 if __name__ == "__main__":
     main()
