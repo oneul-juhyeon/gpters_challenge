@@ -147,7 +147,7 @@ def main():
         final_result_declaration['Total'] = final_result_declaration.drop(columns='User').sum(axis=1)
         
         # 선언하기 상위 사용자 찾기 및 순위 부여
-        top_users_declaration = final_result_declaration.nlargest(5, 'Total')['User'].tolist()
+        top_users_declaration = final_result_declaration.nlargest(1, 'Total')['User'].tolist()
         final_result_declaration = final_result_declaration.sort_values(by='Total', ascending=False)
         final_result_declaration['Rank'] = range(1, len(final_result_declaration) + 1)
         
@@ -163,7 +163,7 @@ def main():
         final_result_weekly_mission['Total'] = final_result_weekly_mission.drop(columns='User').sum(axis=1)
 
         # 주간미션 상위 사용자 찾기 및 순위 부여
-        top_users_weekly_mission = final_result_weekly_mission.nlargest(5, 'Total')['User'].tolist()
+        top_users_weekly_mission = final_result_weekly_mission.nlargest(1, 'Total')['User'].tolist()
         final_result_weekly_mission = final_result_weekly_mission.sort_values(by='Total', ascending=False)
         final_result_weekly_mission['Rank'] = range(1, len(final_result_weekly_mission) + 1)
         
@@ -187,7 +187,7 @@ def main():
 
         
         # 운동인증 상위 사용자 찾기 및 순위 부여
-        top_users_exercise_certification = final_result_exercise_certification.nlargest(5, 'Total')['User'].tolist()
+        top_users_exercise_certification = final_result_exercise_certification.nlargest(3, 'Total')['User'].tolist()
         final_result_exercise_certification = final_result_exercise_certification.sort_values(by='Total', ascending=False)
         final_result_exercise_certification['Rank'] = range(1, len(final_result_exercise_certification) + 1)
         
@@ -221,7 +221,7 @@ def main():
 
         # 운동인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         messages = []
-        messages.append(f"### 💪🏻 운동 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_exercise_certification}입니다. 몸짱 되시겠군요?")
+        messages.append(f"### 💪🏻 운동 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버 Top3는 {top_users_exercise_certification}입니다. 몸짱 되시겠군요?")
         messages.append(f"### ✨ 어제 운동을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_exercise_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
         
         for message in messages:
