@@ -197,17 +197,7 @@ def main():
         final_result_exercise_certification.fillna(0, inplace=True)
 
 
-                
-        # 버튼을 위한 컨테이너 생성
-        button_container = st.container()
-        
-        # 버튼 생성
-        daily_mission_button = button_container.button('Daily Mission')
-        exercise_certification_button = button_container.button('Exercise Certification')
-        declaration_button = button_container.button('Declare')
-        weekly_mission_button = button_container.button('Weekly Mission')
-
-        
+            
         # 버튼을 위한 열 생성
         col1, col2, col3, col4 = st.columns(4)
         
