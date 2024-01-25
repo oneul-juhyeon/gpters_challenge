@@ -136,7 +136,7 @@ def main():
 
         # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         messages.append(f"### 🔥 독서 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 부자 되시겠군요?")
-        messages.append(f"### 💝 어제 인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
+        messages.append(f"### 💝 어제 데일리인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
         
         for message in messages:
             st.markdown(message)
@@ -146,7 +146,7 @@ def main():
         st.markdown("\n\n", unsafe_allow_html=True)
 
         # 전체 결과 보기
-        st.subheader("전체 결과 보기")
+        st.subheader("데일리 미션 전체 결과 보기")
 
         # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         st.dataframe(final_result_df.reset_index(drop=True))
