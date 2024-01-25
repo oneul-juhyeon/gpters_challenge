@@ -61,7 +61,7 @@ def main():
         st.caption("✔️혼자서는 불가능하다고 미뤄온 일 끝장내기 \n\n ✔️책과 사람을 통한 초고속 비즈니스 성장 \n\n✔️ 실행력 10배 끌어올리는 환경세팅, 72법칙\n")
 
         st.subheader("✡️인류최초 조만장자가 될 사람들의 모임")
-        st.caption("-트릴리온이 궁금해? : https://blog.naver.com/yoo1104/223322531413")
+        st.caption("- 트릴리온이 궁금해? : https://blog.naver.com/yoo1104/223322531413")
 
 
         st.header("만든 사람")
