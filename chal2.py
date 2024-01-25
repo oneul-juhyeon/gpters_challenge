@@ -248,13 +248,19 @@ def main():
         # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         st.dataframe(final_result_declaration.reset_index(drop=True))
 
-           
+        # 주간미션 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
+        messages = []
+        messages.append(f"### 🔥 주간미션을 가장 많이 한 멤버는? \n지금까지 주간미션을 가장 많이 한 멤버는 {top_users_weekly_mission}입니다. 성공하시겠군요?")
+
+        for message in messages:
+            st.markdown(message)
+            
+        # 전체 결과 보기
+        st.subheader("주간미션 전체 결과 보기")
+
         # 표와 메시지 사이의 줄바꿈 추가
         st.markdown("\n\n", unsafe_allow_html=True)
         st.markdown("\n\n", unsafe_allow_html=True)
-
-        # 전체 결과 보기
-        st.subheader("주간미션 전체 결과 보기")
 
         # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         st.dataframe(final_result_weekly_mission.reset_index(drop=True))
