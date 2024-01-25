@@ -201,6 +201,16 @@ def main():
         messages.append(f"### 🔥 독서 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 부자 되시겠군요?")
         messages.append(f"### 💝 어제 데일리인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
         
+        # 운동인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
+        messages.append(f"### 🔥 운동 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_exercise_certification}입니다. 몸 되시겠군요?")
+        messages.append(f"### 💝 어제 운동을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_exercise_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
+
+        # 선언하기 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
+        messages.append(f"### 🔥 선언하기를 가장 많이 한 멤버는? \n지금까지 가장 많은 선언을 많이 한 멤버는 {top_users_declaration}입니다. 성공하시겠군요?")
+
+        # 주간미션 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
+        messages.append(f"### 🔥 주간미션을 가장 많이 한 멤버는? \n지금까지 주간미션을 가장 많이 한 멤버는 {top_users_weekly_mission}입니다. 성공하시겠군요?")
+
         for message in messages:
             st.markdown(message)
            
@@ -217,15 +227,6 @@ def main():
         # 줄바꿈 추가
         st.markdown("\n\n", unsafe_allow_html=True)
         st.markdown("\n\n", unsafe_allow_html=True)
-
-        # 운동인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        messages.append(f"### 🔥 운동 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_exercise_certification}입니다. 몸 되시겠군요?")
-        messages.append(f"### 💝 어제 운동을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_exercise_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
-        
-        # 메시지 리셋 후 출력
-        messages = []        
-        for message in messages:
-            st.markdown(message)
            
         # 표와 메시지 사이의 줄바꿈 추가
         st.markdown("\n\n", unsafe_allow_html=True)
@@ -237,20 +238,6 @@ def main():
         # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         st.dataframe(final_result_exercise_certification.reset_index(drop=True))
 
-        
-        # 줄바꿈 추가
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
-
-        
-        # 선언하기 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        messages.append(f"### 🔥 선언하기를 가장 많이 한 멤버는? \n지금까지 가장 많은 선언을 많이 한 멤버는 {top_users_declaration}입니다. 성공하시겠군요?")
-
-        # 메시지 리셋 후 출력
-        messages = []
-        for message in messages:
-            st.markdown(message)
-           
         # 표와 메시지 사이의 줄바꿈 추가
         st.markdown("\n\n", unsafe_allow_html=True)
         st.markdown("\n\n", unsafe_allow_html=True)
@@ -261,18 +248,6 @@ def main():
         # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         st.dataframe(final_result_declaration.reset_index(drop=True))
 
-        
-        # 줄바꿈 추가
-        st.markdown("\n\n", unsafe_allow_html=True)
-        st.markdown("\n\n", unsafe_allow_html=True)
-
-        # 주간미션 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        messages.append(f"### 🔥 주간미션을 가장 많이 한 멤버는? \n지금까지 주간미션을 가장 많이 한 멤버는 {top_users_weekly_mission}입니다. 성공하시겠군요?")
-
-        # 메시지 리셋 후 출력
-        messages = []
-        for message in messages:
-            st.markdown(message)
            
         # 표와 메시지 사이의 줄바꿈 추가
         st.markdown("\n\n", unsafe_allow_html=True)
