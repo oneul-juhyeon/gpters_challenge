@@ -106,8 +106,8 @@ def main():
         df = df[df['Date'] >= start_date]
         df['Date'] = df['Date'].dt.strftime('%m/%d')
 
-        # Message에서 #독서미션 단어가 있는지 확인하고 cnt 컬럼 생성
-        df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서미션' in x else 0)
+        # Message에서 #독서인증 단어가 있는지 확인하고 cnt 컬럼 생성
+        df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in x else 0)
 
         # 어제의 메시지 중 #인증이 포함되어 있고 150자가 넘는 메시지 필터링
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
@@ -215,7 +215,7 @@ def main():
         
         # 버튼 생성
         with col1:
-            daily_mission_button = st.button('독서미션')
+            daily_mission_button = st.button('독서인증')
         with col2:
             exercise_certification_button = st.button('운동인증')
         with col3:
@@ -223,7 +223,7 @@ def main():
         with col4:
             weekly_mission_button = st.button('주간미션')
 
-        # 독서미션 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
+        # 독서인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         if daily_mission_button:
             messages.append(f"### 🔥 독서 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 부자 되시겠군요?")
             messages.append(f"### 💝 어제 독서인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
@@ -236,7 +236,7 @@ def main():
             st.markdown("\n\n", unsafe_allow_html=True)
     
             # 전체 결과 보기
-            st.subheader("독서 미션 전체 결과 보기")
+            st.subheader("독서 인증 전체 결과 보기")
     
             # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
             st.dataframe(final_result_df.reset_index(drop=True))
