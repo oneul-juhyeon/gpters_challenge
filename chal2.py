@@ -41,6 +41,10 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
             dates.append(full_datetime)
             users.append(user)
             messages.append(message)
+        else:
+            # If the line doesn't match the message pattern, append it to the previous message
+            if messages:
+                messages[-1] += '\n' + line.strip()
             
     df = pd.DataFrame({
         'Date': dates,
@@ -222,6 +226,8 @@ def main():
             declaration_button = st.button('선언하기')
         with col4:
             weekly_mission_button = st.button('주간미션')
+
+
 
         # 독서인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         if daily_mission_button:
