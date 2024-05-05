@@ -151,10 +151,10 @@ def main():
         final_result_df.fillna(0, inplace=True)
 
 
-        ## Message에서 #운동인증, #주간미션, #선언하기 태그별로 존재 여부를 확인하고 카운트하는 함수 추가
+        ## Message에서 #숏폼인증, #주간미션, #선언하기 태그별로 존재 여부를 확인하고 카운트하는 함수 추가
         df['Declaration_cnt'] = df['Message'].apply(lambda x: 1 if '#선언하기' in str(x) else 0)
         df['WeeklyMission_cnt'] = df['Message'].apply(lambda x: 1 if '#주간미션' in str(x) else 0)
-        df['ExerciseCertification_cnt'] = df['Message'].apply(lambda x: 1 if '#운동인증' in str(x) else 0)
+        df['ExerciseCertification_cnt'] = df['Message'].apply(lambda x: 1 if '#숏폼인증' in str(x) else 0)
 
 
         # 선언하기 날짜별 및 사용자별 카운트 집계
@@ -189,7 +189,7 @@ def main():
         final_result_weekly_mission.fillna(0, inplace=True)
 
         
-        # 운동인증 날짜별 및 사용자별 #ExerciseCertification 카운트 집계
+        # 숏폼인증 날짜별 및 사용자별 #ExerciseCertification 카운트 집계
         result_exercise_certification = df.groupby(['Date', 'User'])['ExerciseCertification_cnt'].sum().reset_index()
         final_result_exercise_certification = result_exercise_certification.pivot_table(index='User', columns='Date', values='ExerciseCertification_cnt', aggfunc='sum').reset_index()
         final_result_exercise_certification['Total'] = final_result_exercise_certification.drop(columns='User').sum(axis=1)
@@ -202,7 +202,7 @@ def main():
                 successful_exercise_users_yesterday_str = ', '.join(successful_exercise_users_yesterday)
 
         
-        # 운동인증 상위 사용자 찾기 및 순위 부여
+        # 숏폼인증 상위 사용자 찾기 및 순위 부여
         top_users_exercise_certification = final_result_exercise_certification.nlargest(3, 'Total')['User'].tolist()
         final_result_exercise_certification = final_result_exercise_certification.sort_values(by='Total', ascending=False)
         final_result_exercise_certification['Rank'] = range(1, len(final_result_exercise_certification) + 1)
@@ -221,7 +221,7 @@ def main():
         with col1:
             daily_mission_button = st.button('독서인증')
         with col2:
-            exercise_certification_button = st.button('운동인증')
+            exercise_certification_button = st.button('숏폼인증')
         with col3:
             declaration_button = st.button('선언하기')
         with col4:
@@ -252,11 +252,11 @@ def main():
             st.markdown("\n\n", unsafe_allow_html=True)
             st.markdown("\n\n", unsafe_allow_html=True)
 
-        # 운동인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
+        # 숏폼인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         if exercise_certification_button:
             messages = []
-            messages.append(f"### 💪🏻 운동 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버 Top3는 {top_users_exercise_certification}입니다. 몸짱 되시겠군요?")
-            messages.append(f"### ✨ 어제 운동을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_exercise_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
+            messages.append(f"### 💪🏻 숏폼 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버 Top3는 {top_users_exercise_certification}입니다. 인플루언서 되시겠군요?")
+            messages.append(f"### ✨ 어제 숏폼인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_exercise_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
             
             for message in messages:
                 st.markdown(message)
@@ -266,7 +266,7 @@ def main():
             st.markdown("\n\n", unsafe_allow_html=True)
     
             # 전체 결과 보기
-            st.subheader("운동 미션 전체 결과 보기")
+            st.subheader("숏폼 미션 전체 결과 보기")
     
             # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
             st.dataframe(final_result_exercise_certification.reset_index(drop=True))
