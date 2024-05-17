@@ -4,7 +4,6 @@ import pandas as pd
 from datetime import datetime, timedelta
 import re
 
-
 # 추가된 함수: txt 파일을 csv 형식으로 변환하는 함수
 def process_chat_with_formatted_date_and_seconds(file_contents):
     lines = file_contents.split('\n')
@@ -67,7 +66,6 @@ def main():
         st.subheader("✡️조만장자가 될 사람들의 모임")
         st.caption("👀트릴리온이 궁금해? : [링크](https://blog.naver.com/yoo1104/223322531413)")
 
-
         st.header("만든 사람")
         st.markdown("😄 트릴리온 커뮤니티 리더 주현영")
         st.markdown("❤️ 트릴리온 인스타 : [링크](https://www.instagram.com/trillion_union/)")
@@ -78,7 +76,6 @@ def main():
 
         st.header("열일한 노예")
         st.markdown("👽 Chat GPT")
-
 
     # CSV와 TXT 파일 업로드 지원
     uploaded_file = st.file_uploader("카카오톡에서 받은 CSV 또는 TXT 파일을 업로드하세요.", type=["csv", "txt"])
@@ -110,10 +107,10 @@ def main():
         df = df[df['Date'] >= start_date]
         df['Date'] = df['Date'].dt.strftime('%m/%d')
 
-        # Message에서 #독서인증 단어가 있는지 확인하고 cnt 컬럼 생성
-        df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in str(x) else 0)
+        # Message에서 #인증 단어가 있는지 확인하고 cnt 컬럼 생성
+        df['cnt'] = df['Message'].apply(lambda x: 1 if '#인증' in str(x) else 0)
 
-        # 어제의 메시지 중 #인증이 포함되어 있고 150자가 넘는 메시지 필터링
+        # 어제의 메시지 중 #인증이 포함되어 있고 50자가 넘는 메시지 필터링
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
         yesterday_messages = df[(df['Date'] == yesterday) & (df['cnt'] == 1) & (df['Message'].str.len() > 50)]
         yesterday_messages_list = yesterday_messages['Message'].tolist()
@@ -150,89 +147,13 @@ def main():
         final_result_df = final_result_df[column_order]
         final_result_df.fillna(0, inplace=True)
 
+        # 인증 결과 표시 버튼
+        certification_button = st.button('인증 결과 보기')
 
-        ## Message에서 #숏폼인증, #주간미션, #선언하기 태그별로 존재 여부를 확인하고 카운트하는 함수 추가
-        df['Declaration_cnt'] = df['Message'].apply(lambda x: 1 if '#선언하기' in str(x) else 0)
-        df['WeeklyMission_cnt'] = df['Message'].apply(lambda x: 1 if '#주간미션' in str(x) else 0)
-        df['ExerciseCertification_cnt'] = df['Message'].apply(lambda x: 1 if '#숏폼인증' in str(x) else 0)
-
-
-        # 선언하기 날짜별 및 사용자별 카운트 집계
-        result_declaration = df.groupby(['Date', 'User'])['Declaration_cnt'].sum().reset_index()
-        final_result_declaration = result_declaration.pivot_table(index='User', columns='Date', values='Declaration_cnt', aggfunc='sum').reset_index()
-        final_result_declaration['Total'] = final_result_declaration.drop(columns='User').sum(axis=1)
-        
-        # 선언하기 상위 사용자 찾기 및 순위 부여
-        top_users_declaration = final_result_declaration.nlargest(1, 'Total')['User'].tolist()
-        final_result_declaration = final_result_declaration.sort_values(by='Total', ascending=False)
-        final_result_declaration['Rank'] = range(1, len(final_result_declaration) + 1)
-        
-        # 선언하기 최종 결과 데이터 프레임 조정
-        column_order_declaration = ['Rank', 'User', 'Total'] + sorted([col for col in final_result_declaration.columns if col not in ['User', 'Total', 'Rank']])
-        final_result_declaration = final_result_declaration[column_order_declaration]
-        final_result_declaration.fillna(0, inplace=True)
-
-        
-        # 주간미션 날짜별 및 사용자별 카운트 집계
-        result_weekly_mission = df.groupby(['Date', 'User'])['WeeklyMission_cnt'].sum().reset_index()
-        final_result_weekly_mission = result_weekly_mission.pivot_table(index='User', columns='Date', values='WeeklyMission_cnt', aggfunc='sum').reset_index()
-        final_result_weekly_mission['Total'] = final_result_weekly_mission.drop(columns='User').sum(axis=1)
-
-        # 주간미션 상위 사용자 찾기 및 순위 부여
-        top_users_weekly_mission = final_result_weekly_mission.nlargest(1, 'Total')['User'].tolist()
-        final_result_weekly_mission = final_result_weekly_mission.sort_values(by='Total', ascending=False)
-        final_result_weekly_mission['Rank'] = range(1, len(final_result_weekly_mission) + 1)
-        
-        # 최종 결과 데이터 프레임 조정
-        column_order_weekly_mission = ['Rank', 'User', 'Total'] + sorted([col for col in final_result_weekly_mission.columns if col not in ['User', 'Total', 'Rank']])
-        final_result_weekly_mission = final_result_weekly_mission[column_order_weekly_mission]
-        final_result_weekly_mission.fillna(0, inplace=True)
-
-        
-        # 숏폼인증 날짜별 및 사용자별 #ExerciseCertification 카운트 집계
-        result_exercise_certification = df.groupby(['Date', 'User'])['ExerciseCertification_cnt'].sum().reset_index()
-        final_result_exercise_certification = result_exercise_certification.pivot_table(index='User', columns='Date', values='ExerciseCertification_cnt', aggfunc='sum').reset_index()
-        final_result_exercise_certification['Total'] = final_result_exercise_certification.drop(columns='User').sum(axis=1)
-
-        # 어제 성공적으로 인증한 멤버들 찾기
-        successful_exercise_users_yesterday_str = ""
-        if yesterday in final_result_exercise_certification.columns:
-            successful_exercise_users_yesterday = final_result_exercise_certification[final_result_exercise_certification[yesterday] > 0]['User'].tolist()
-            if successful_exercise_users_yesterday:
-                successful_exercise_users_yesterday_str = ', '.join(successful_exercise_users_yesterday)
-
-        
-        # 숏폼인증 상위 사용자 찾기 및 순위 부여
-        top_users_exercise_certification = final_result_exercise_certification.nlargest(3, 'Total')['User'].tolist()
-        final_result_exercise_certification = final_result_exercise_certification.sort_values(by='Total', ascending=False)
-        final_result_exercise_certification['Rank'] = range(1, len(final_result_exercise_certification) + 1)
-        
-        # 최종 결과 데이터 프레임 조정
-        column_order_exercise_certification = ['Rank', 'User', 'Total'] + sorted([col for col in final_result_exercise_certification.columns if col not in ['User', 'Total', 'Rank']])
-        final_result_exercise_certification = final_result_exercise_certification[column_order_exercise_certification]
-        final_result_exercise_certification.fillna(0, inplace=True)
-
-
-            
-        # 버튼을 위한 열 생성
-        col1, col2, col3, col4 = st.columns(4)
-        
-        # 버튼 생성
-        with col1:
-            daily_mission_button = st.button('독서인증')
-        with col2:
-            exercise_certification_button = st.button('숏폼인증')
-        with col3:
-            declaration_button = st.button('선언하기')
-        with col4:
-            weekly_mission_button = st.button('주간미션')
-
-
-
-        # 독서인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        if daily_mission_button:
-            messages.append(f"### 🔥 독서 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 부자 되시겠군요?")
-            messages.append(f"### 💝 어제 독서인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
+        # 인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
+        if certification_button:
+            messages.append(f"### 🔥 인증 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버는 {top_users_str}입니다. 부자 되시겠군요?")
+            messages.append(f"### 💝 어제 인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
             
             for message in messages:
                 st.markdown(message)
@@ -242,7 +163,7 @@ def main():
             st.markdown("\n\n", unsafe_allow_html=True)
     
             # 전체 결과 보기
-            st.subheader("독서 인증 전체 결과 보기")
+            st.subheader("인증 전체 결과 보기")
     
             # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
             st.dataframe(final_result_df.reset_index(drop=True))
@@ -252,71 +173,5 @@ def main():
             st.markdown("\n\n", unsafe_allow_html=True)
             st.markdown("\n\n", unsafe_allow_html=True)
 
-        # 숏폼인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        if exercise_certification_button:
-            messages = []
-            messages.append(f"### 💪🏻 숏폼 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버 Top3는 {top_users_exercise_certification}입니다. 인플루언서 되시겠군요?")
-            messages.append(f"### ✨ 어제 숏폼인증을 성공한 멤버는?\n{yesterday}에 인증을 성공한 멤버는 {successful_exercise_users_yesterday_str}입니다. 어제도 정말 수고 하셨어요!")
-            
-            for message in messages:
-                st.markdown(message)
-                
-            # 표와 메시지 사이의 줄바꿈 추가
-            st.markdown("\n\n", unsafe_allow_html=True)
-            st.markdown("\n\n", unsafe_allow_html=True)
-    
-            # 전체 결과 보기
-            st.subheader("숏폼 미션 전체 결과 보기")
-    
-            # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-            st.dataframe(final_result_exercise_certification.reset_index(drop=True))
-    
-            # 줄바꿈 추가
-            st.markdown("\n\n", unsafe_allow_html=True)
-            st.markdown("\n\n", unsafe_allow_html=True)
-            st.markdown("\n\n", unsafe_allow_html=True)
-            
-        # 선언하기 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        if declaration_button:
-            messages = []
-            messages.append(f"### 😲 선언하기를 가장 많이 한 멤버는? \n지금까지 선언을 가장 많이 한 멤버는 {top_users_declaration}입니다. 독보적이시군요?")
-    
-            for message in messages:
-                st.markdown(message)
-                
-            # 표와 메시지 사이의 줄바꿈 추가
-            st.markdown("\n\n", unsafe_allow_html=True)
-            st.markdown("\n\n", unsafe_allow_html=True)
-            
-            # 전체 결과 보기
-            st.subheader("선언하기 전체 결과 보기")
-    
-            # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-            st.dataframe(final_result_declaration.reset_index(drop=True))
-    
-            # 줄바꿈 추가
-            st.markdown("\n\n", unsafe_allow_html=True)
-            st.markdown("\n\n", unsafe_allow_html=True)
-            st.markdown("\n\n", unsafe_allow_html=True)
-        
-        # 주간미션 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-        if weekly_mission_button:
-            messages = []
-            messages.append(f"### 👀 주간미션을 가장 많이 한 멤버는? \n지금까지 주간미션을 가장 많이 한 멤버는 {top_users_weekly_mission}입니다. 성공하시겠군요?")
-    
-            for message in messages:
-                st.markdown(message)
-                
-            # 표와 메시지 사이의 줄바꿈 추가
-            st.markdown("\n\n", unsafe_allow_html=True)
-            st.markdown("\n\n", unsafe_allow_html=True)
-            
-            # 전체 결과 보기
-            st.subheader("주간미션 전체 결과 보기")
-    
-            # 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
-            st.dataframe(final_result_weekly_mission.reset_index(drop=True))
-
 if __name__ == "__main__":
     main()
-
