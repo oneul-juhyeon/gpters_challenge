@@ -110,9 +110,9 @@ def main():
         # Message에서 #인증 단어가 있는지 확인하고 cnt 컬럼 생성
         df['cnt'] = df['Message'].apply(lambda x: 1 if '#인증' in str(x) else 0)
 
-        # 어제의 메시지 중 #인증이 포함되어 있고 50자가 넘는 메시지 필터링
+        # 어제의 메시지 중 #인증이 포함된 메시지 필터링
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
-        yesterday_messages = df[(df['Date'] == yesterday) & (df['cnt'] == 1) & (df['Message'].str.len() > 50)]
+        yesterday_messages = df[(df['Date'] == yesterday) & (df['cnt'] == 1)]
         yesterday_messages_list = yesterday_messages['Message'].tolist()
         if len(yesterday_messages_list) >= 5:
             random_selected_messages = random.sample(yesterday_messages_list, 5)
