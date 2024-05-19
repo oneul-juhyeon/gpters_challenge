@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import re
 
-# 추가된 함수: txt 파일을 csv 형식으로 변환하는 함수
+# 추가된 함수: 기존 및 새로운 txt 파일을 csv 형식으로 변환하는 함수
 def process_chat_with_formatted_date_and_seconds(file_contents):
     lines = file_contents.split('\n')
     dates = []
@@ -12,22 +12,48 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
     messages = []
     current_date = None
 
-    date_pattern = re.compile(r'--------------- (\d{4}년 \d{1,2}월 \d{1,2}일) .+ ---------------')
-    message_pattern = re.compile(r'\[(.+?)\] \[(오전|오후) (\d{1,2}:\d{2})\] (.+)')
+    # 기존 양식 패턴
+    date_pattern_old = re.compile(r'--------------- (\d{4}년 \d{1,2}월 \d{1,2}일) .+ ---------------')
+    message_pattern_old = re.compile(r'\[(.+?)\] \[(오전|오후) (\d{1,2}:\d{2})\] (.+)')
+
+    # 새로운 양식 패턴
+    date_pattern_new = re.compile(r'([A-Za-z]+, \w+ \d{1,2}, \d{4})')
+    message_pattern_new = re.compile(r'(\w+ \d{1,2}, \d{4} at \d{1,2}:\d{2} (?:AM|PM)), (.+?) : (.+)')
 
     for line in lines:
-        date_match = date_pattern.match(line)
-        if date_match:
-            current_date = date_match.group(1)
+        # 새로운 양식 처리
+        date_match_new = date_pattern_new.match(line)
+        if date_match_new:
+            current_date = date_match_new.group(1)
+            current_date = pd.to_datetime(current_date, format='%B %d, %Y').strftime('%Y-%m-%d')
+            continue
+
+        message_match_new = message_pattern_new.match(line)
+        if message_match_new and current_date:
+            timestamp = message_match_new.group(1)
+            user = message_match_new.group(2)
+            message = message_match_new.group(3)
+
+            # 날짜와 시간 병합
+            full_datetime = f"{current_date} {timestamp.split(' at ')[1]}"
+            dates.append(full_datetime)
+            users.append(user)
+            messages.append(message)
+            continue
+
+        # 기존 양식 처리
+        date_match_old = date_pattern_old.match(line)
+        if date_match_old:
+            current_date = date_match_old.group(1)
             current_date = pd.to_datetime(current_date, format='%Y년 %m월 %d일').strftime('%Y-%m-%d')
             continue
 
-        message_match = message_pattern.match(line)
-        if message_match and current_date:
-            user = message_match.group(1)
-            am_pm = message_match.group(2)
-            time = message_match.group(3)
-            message = message_match.group(4)
+        message_match_old = message_pattern_old.match(line)
+        if message_match_old and current_date:
+            user = message_match_old.group(1)
+            am_pm = message_match_old.group(2)
+            time = message_match_old.group(3)
+            message = message_match_old.group(4)
 
             # Convert Korean AM/PM to 24-hour format
             if am_pm == '오후' and time.split(':')[0] != '12':
