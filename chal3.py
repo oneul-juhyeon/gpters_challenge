@@ -25,7 +25,10 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
         date_match_new = date_pattern_new.match(line)
         if date_match_new:
             current_date = date_match_new.group(1)
-            current_date = pd.to_datetime(current_date, format='%B %d, %Y').strftime('%Y-%m-%d')
+            try:
+                current_date = pd.to_datetime(current_date, format='%B %d, %Y').strftime('%Y-%m-%d')
+            except ValueError:
+                current_date = None
             continue
 
         message_match_new = message_pattern_new.match(line)
@@ -172,7 +175,7 @@ def main():
 
         # 인증 결과 표시 버튼
         certification_button = st.button('인증 결과 보기')
-
+        
         # 인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         if certification_button:
             messages.append(f"### 🔥 인증 파워가 가장 높은 멤버는? \n지금까지 가장 인증을 많이 한 멤버 5명은 {top_users_str}입니다.")
