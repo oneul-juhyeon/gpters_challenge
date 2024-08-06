@@ -24,7 +24,7 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
         message_match = message_pattern.match(line)
         if message_match and current_date:
             user = message_match.group(1)
-            am_pm = message_match.group(2)
+            am_pm = message_pattern.group(2)
             time = message_match.group(3)
             message = message_match.group(4)
 
@@ -87,14 +87,9 @@ def main():
         start_date = pd.to_datetime("2024-01-22")
         df = df[df['Date'] >= start_date]
         
-        st.write("Date range in the data:", df['Date'].min(), "to", df['Date'].max())
-        
         df['Date'] = df['Date'].dt.strftime('%m/%d')
 
         df['cnt'] = df['Message'].apply(lambda x: 1 if re.search(r'#독서인증', x, re.IGNORECASE) is not None else 0)
-
-        st.write("Sample of processed data:")
-        st.write(df[['Date', 'User', 'Message', 'cnt']].head())
 
         result_df = df.groupby(['Date', 'User'])['cnt'].sum().reset_index()    
 
@@ -108,9 +103,6 @@ def main():
         column_order = ['순위', 'User', '총합'] + sorted([col for col in final_result_df.columns if col not in ['User', '총합', '순위']])
         final_result_df = final_result_df[column_order]
         final_result_df = final_result_df.fillna(0)
-
-        st.write("Final result:")
-        st.write(final_result_df)
 
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
         yesterday_messages = df[(df['Date'] == yesterday) & (df['cnt'] == 1) & (df['Message'].str.len() > 50)]
