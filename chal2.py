@@ -4,8 +4,6 @@ import pandas as pd
 from datetime import datetime, timedelta
 import re
 
-
-# 추가된 함수: txt 파일을 csv 형식으로 변환하는 함수
 # txt 파일을 처리하여 날짜와 초까지 포맷팅하는 함수
 def process_chat_with_formatted_date_and_seconds(file_contents):
     lines = file_contents.split('\n')
@@ -53,7 +51,7 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
         'Message': messages
     })
     return df
-    
+
 # main 함수 수정
 def main():
     st.title("Trillion 미션 카운팅🏅")
@@ -160,7 +158,7 @@ def main():
         result_declaration = df.groupby(['Date', 'User'])['Declaration_cnt'].sum().reset_index()
         final_result_declaration = result_declaration.pivot_table(index='User', columns='Date', values='Declaration_cnt', aggfunc='sum').reset_index()
         final_result_declaration['Total'] = final_result_declaration.drop(columns='User').sum(axis=1)
-                
+        
         # 선언하기 상위 사용자 찾기 및 순위 부여
         top_users_declaration = final_result_declaration.nlargest(1, 'Total')['User'].tolist()
         final_result_declaration = final_result_declaration.sort_values(by='Total', ascending=False)
@@ -211,7 +209,6 @@ def main():
         final_result_exercise_certification = final_result_exercise_certification[column_order_exercise_certification]
         final_result_exercise_certification.fillna(0, inplace=True)
 
-
             
         # 버튼을 위한 열 생성
         col1, col2, col3, col4 = st.columns(4)
@@ -225,8 +222,6 @@ def main():
             declaration_button = st.button('선언하기')
         with col4:
             weekly_mission_button = st.button('주간미션')
-
-
 
         # 독서인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         if daily_mission_button:
@@ -284,8 +279,8 @@ def main():
                 st.markdown(message)
                 
             # 표와 메시지 사이의 줄바꿈 추가
-            st.markdown("\n\n", unsafe_allow_html=True)
-            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow html=True)
+            st.markdown("\n\n", unsafe_allow html=True)
             
             # 전체 결과 보기
             st.subheader("선언하기 전체 결과 보기")
@@ -294,9 +289,9 @@ def main():
             st.dataframe(final_result_declaration.reset_index(drop=True))
     
             # 줄바꿈 추가
-            st.markdown("\n\n", unsafe_allow_html=True)
-            st.markdown("\n\n", unsafe_allow_html=True)
-            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow html=True)
+            st.markdown("\n\n", unsafe_allow html=True)
+            st.markdown("\n\n", unsafe_allow html=True)
         
         # 주간미션 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         if weekly_mission_button:
@@ -307,8 +302,8 @@ def main():
                 st.markdown(message)
                 
             # 표와 메시지 사이의 줄바꿈 추가
-            st.markdown("\n\n", unsafe_allow_html=True)
-            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow html=True)
+            st.markdown("\n\n", unsafe_allow html=True)
             
             # 전체 결과 보기
             st.subheader("주간미션 전체 결과 보기")
@@ -318,4 +313,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
