@@ -111,7 +111,7 @@ def main():
             df['Message'] = df['Message'].astype(str)
             
             # 날짜 형식 변경
-            start_date = pd.to_datetime("2024-01-22") # 여기서 날짜를 설정하세요
+            start_date = pd.to_datetime("2024-08-01") # 여기서 날짜를 설정하세요
             df['Date'] = pd.to_datetime(df['Date'])
             df = df[df['Date'] >= start_date]
             df['Date'] = df['Date'].dt.strftime('%m/%d')
