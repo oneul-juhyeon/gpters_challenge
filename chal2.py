@@ -50,9 +50,8 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
                 time = '00' + time[time.find(':'):]
             
             current_message = message
-        else:
-            if current_message:
-                current_message += '\n' + line.strip()
+        elif current_message:  # 여러 줄 메시지 처리
+            current_message += '\n' + line.strip()
     
     if current_message:
         messages.append(current_message.strip())
@@ -65,7 +64,7 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
         'Message': messages
     })
     return df
-
+    
 # main 함수 수정
 def main():
     st.title("Trillion 미션 카운팅🏅")
@@ -118,7 +117,7 @@ def main():
         df = df[df['User'] != '오픈채팅봇']
 
         # 날짜 형식 변경
-        start_date = pd.to_datetime("2024-01-22") # 여기서 날짜를 설정하세요
+        start_date = pd.to_datetime("2024-08-02") # 여기서 날짜를 설정하세요
         df['Date'] = pd.to_datetime(df['Date'])
         df = df[df['Date'] >= start_date]
         df['Date'] = df['Date'].dt.strftime('%m/%d')
