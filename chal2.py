@@ -93,7 +93,7 @@ def main():
         elif uploaded_file.name.endswith('.txt'):
             # TXT 파일을 읽어서 전처리
             file_contents = uploaded_file.getvalue().decode("utf-8")
-            df = process_chat_with_formatted_date_and_seconds(file_contents)  # 수정된 함수 사용
+            df = process_chat_with_formatted_date_and_seconds(file_contents)
             
             # 'Message' 열의 모든 데이터를 문자열로 변환
             df['Message'] = df['Message'].astype(str)
