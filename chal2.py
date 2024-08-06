@@ -12,6 +12,7 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
     users = []
     messages = []
     current_date = None
+    current_user = None
     current_message = ""
 
     date_pattern = re.compile(r'--------------- (\d{4}년 \d{1,2}월 \d{1,2}일) .+ ---------------')
@@ -22,6 +23,8 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
         if date_match:
             if current_message:
                 messages.append(current_message.strip())
+                dates.append(current_date)
+                users.append(current_user)
                 current_message = ""
             current_date = date_match.group(1)
             current_date = pd.to_datetime(current_date, format='%Y년 %m월 %d일').strftime('%Y-%m-%d')
@@ -31,9 +34,11 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
         if message_match and current_date:
             if current_message:
                 messages.append(current_message.strip())
+                dates.append(current_date)
+                users.append(current_user)
                 current_message = ""
             
-            user = message_match.group(1)
+            current_user = message_match.group(1)
             am_pm = message_match.group(2)
             time = message_match.group(3)
             message = message_match.group(4)
@@ -45,9 +50,6 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
             elif am_pm == '오전' and time.split(':')[0] == '12':
                 time = '00' + time[time.find(':'):]
             
-            full_datetime = f"{current_date} {time}"
-            dates.append(full_datetime)
-            users.append(user)
             current_message = message
         else:
             # 라인이 메시지 패턴과 일치하지 않으면 현재 메시지에 추가
@@ -57,6 +59,8 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
     # 마지막 메시지가 있으면 추가
     if current_message:
         messages.append(current_message.strip())
+        dates.append(current_date)
+        users.append(current_user)
             
     df = pd.DataFrame({
         'Date': dates,
@@ -64,6 +68,7 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
         'Message': messages
     })
     return df
+
 
 # main 함수 수정
 def main():
@@ -122,9 +127,9 @@ def main():
         df = df[df['Date'] >= start_date]
         df['Date'] = df['Date'].dt.strftime('%m/%d')
 
-        # Message에서 #독서인증 단어가 있는지 확인하고 cnt 컬럼 생성
-        df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in str(x) else 0)
-
+        # main 함수 내 '#독서인증' 태그 인식 로직 수정
+        df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in x else 0)
+        
         # 어제의 메시지 중 #인증이 포함되어 있고 150자가 넘는 메시지 필터링
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
         yesterday_messages = df[(df['Date'] == yesterday) & (df['cnt'] == 1) & (df['Message'].str.len() > 50)]
