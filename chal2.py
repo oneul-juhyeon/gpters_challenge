@@ -6,6 +6,12 @@ import re
 
 
 # 추가된 함수: txt 파일을 csv 형식으로 변환하는 함수
+import random
+import streamlit as st
+import pandas as pd
+from datetime import datetime, timedelta
+import re
+
 def process_chat_with_formatted_date_and_seconds(file_contents):
     lines = file_contents.split('\n')
     dates = []
@@ -97,30 +103,27 @@ def main():
     uploaded_file = st.file_uploader("카카오톡에서 받은 CSV 또는 TXT 파일을 업로드하세요.", type=["csv", "txt"])
 
     messages = []
-
     if uploaded_file:
-        # 파일 확장자에 따라 처리 방식 변경
         if uploaded_file.name.endswith('.csv'):
             df = pd.read_csv(uploaded_file, dtype={"Message": str})
         elif uploaded_file.name.endswith('.txt'):
-            # TXT 파일을 읽어서 전처리
             file_contents = uploaded_file.getvalue().decode("utf-8")
             df = process_chat_with_formatted_date_and_seconds(file_contents)
             
-            # 'Message' 열의 모든 데이터를 문자열로 변환
             df['Message'] = df['Message'].astype(str)
             
             # 날짜 형식 변경
-            start_date = pd.to_datetime("2024-08-01") # 여기서 날짜를 설정하세요
             df['Date'] = pd.to_datetime(df['Date'])
-            df = df[df['Date'] >= start_date]
             df['Date'] = df['Date'].dt.strftime('%m/%d')
             
-            # Message에서 #독서인증 단어가 있는지 확인하고 cnt 컬럼 생성
-            df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in str(x) else 0)
+            # #독서인증 카운팅
+            df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in x else 0)
             
             # 디버깅을 위한 출력
-            print("'#독서인증'이 포함된 메시지:")
+            print("모든 메시지:")
+            print(df[['Date', 'User', 'Message', 'cnt']])
+            
+            print("\n'#독서인증'이 포함된 메시지:")
             print(df[df['cnt'] == 1][['Date', 'User', 'Message']])
             
         # 'Unnamed: 0' 열 제거
