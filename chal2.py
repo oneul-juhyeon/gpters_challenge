@@ -93,7 +93,7 @@ def main():
         elif uploaded_file.name.endswith('.txt'):
             # TXT 파일을 읽어서 전처리
             file_contents = uploaded_file.getvalue().decode("utf-8")
-            df = process_chat_with_formatted_date_and_seconds(file_contents)
+            df = process_chat_with_formatted_date_and_seconds(file_contents)  # 수정된 함수 사용
             
             # 'Message' 열의 모든 데이터를 문자열로 변환
             df['Message'] = df['Message'].astype(str)
@@ -114,7 +114,7 @@ def main():
         # Message에서 #독서인증 단어가 있는지 확인하고 cnt 컬럼 생성
         df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in str(x) else 0)
 
-        # 어제의 메시지 중 #인증이 포함되어 있고 150자가 넘는 메시지 필터링
+        # 어제의 메시지 중 #독서인증이 포함되어 있고 50자가 넘는 메시지 필터링
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
         yesterday_messages = df[(df['Date'] == yesterday) & (df['cnt'] == 1) & (df['Message'].str.len() > 50)]
         yesterday_messages_list = yesterday_messages['Message'].tolist()
@@ -151,18 +151,16 @@ def main():
         final_result_df = final_result_df[column_order]
         final_result_df.fillna(0, inplace=True)
 
-
         ## Message에서 #숏폼인증, #주간미션, #선언하기 태그별로 존재 여부를 확인하고 카운트하는 함수 추가
         df['Declaration_cnt'] = df['Message'].apply(lambda x: 1 if '#선언하기' in str(x) else 0)
         df['WeeklyMission_cnt'] = df['Message'].apply(lambda x: 1 if '#주간미션' in str(x) else 0)
         df['ExerciseCertification_cnt'] = df['Message'].apply(lambda x: 1 if '#숏폼인증' in str(x) else 0)
 
-
         # 선언하기 날짜별 및 사용자별 카운트 집계
         result_declaration = df.groupby(['Date', 'User'])['Declaration_cnt'].sum().reset_index()
         final_result_declaration = result_declaration.pivot_table(index='User', columns='Date', values='Declaration_cnt', aggfunc='sum').reset_index()
         final_result_declaration['Total'] = final_result_declaration.drop(columns='User').sum(axis=1)
-        
+                
         # 선언하기 상위 사용자 찾기 및 순위 부여
         top_users_declaration = final_result_declaration.nlargest(1, 'Total')['User'].tolist()
         final_result_declaration = final_result_declaration.sort_values(by='Total', ascending=False)
