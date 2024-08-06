@@ -109,6 +109,12 @@ def main():
             # 'Message' 열의 모든 데이터를 문자열로 변환
             df['Message'] = df['Message'].astype(str)
             
+            # 날짜 형식 변경
+            df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%m/%d')
+            
+            # '#독서인증' 카운팅
+            df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in x else 0)
+            
         # 'Unnamed: 0' 열 제거
         if 'Unnamed: 0' in df.columns:
             df = df.drop(columns='Unnamed: 0')
@@ -116,14 +122,7 @@ def main():
         # '오픈채팅봇' 제외
         df = df[df['User'] != '오픈채팅봇']
 
-        # 날짜 형식 변경
-        start_date = pd.to_datetime("2024-08-02") # 여기서 날짜를 설정하세요
-        df['Date'] = pd.to_datetime(df['Date'])
-        df = df[df['Date'] >= start_date]
-        df['Date'] = df['Date'].dt.strftime('%m/%d')
 
-        # main 함수 내 '#독서인증' 태그 인식 로직 수정
-        df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in str(x) else 0)
         
         # 어제의 메시지 중 #인증이 포함되어 있고 150자가 넘는 메시지 필터링
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
