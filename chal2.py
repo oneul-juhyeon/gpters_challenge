@@ -6,20 +6,13 @@ import re
 
 
 # 추가된 함수: txt 파일을 csv 형식으로 변환하는 함수
-import random
-import streamlit as st
-import pandas as pd
-from datetime import datetime, timedelta
-import re
-
+# txt 파일을 처리하여 날짜와 초까지 포맷팅하는 함수
 def process_chat_with_formatted_date_and_seconds(file_contents):
     lines = file_contents.split('\n')
     dates = []
     users = []
     messages = []
     current_date = None
-    current_user = None
-    current_message = ""
 
     date_pattern = re.compile(r'--------------- (\d{4}년 \d{1,2}월 \d{1,2}일) .+ ---------------')
     message_pattern = re.compile(r'\[(.+?)\] \[(오전|오후) (\d{1,2}:\d{2})\] (.+)')
@@ -27,50 +20,39 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
     for line in lines:
         date_match = date_pattern.match(line)
         if date_match:
-            if current_message:
-                messages.append(current_message.strip())
-                dates.append(current_date)
-                users.append(current_user)
-                current_message = ""
             current_date = date_match.group(1)
             current_date = pd.to_datetime(current_date, format='%Y년 %m월 %d일').strftime('%Y-%m-%d')
             continue
 
         message_match = message_pattern.match(line)
-        if message_match:
-            if current_message:
-                messages.append(current_message.strip())
-                dates.append(current_date)
-                users.append(current_user)
-                current_message = ""
-            
-            current_user = message_match.group(1)
+        if message_match and current_date:
+            user = message_match.group(1)
             am_pm = message_match.group(2)
             time = message_match.group(3)
             message = message_match.group(4)
 
+            # 오전/오후를 24시간 형식으로 변환
             if am_pm == '오후' and time.split(':')[0] != '12':
                 hour = str(int(time.split(':')[0]) + 12)
                 time = hour + time[time.find(':'):]
             elif am_pm == '오전' and time.split(':')[0] == '12':
                 time = '00' + time[time.find(':'):]
-            
-            current_message = message
-        elif current_message:
-            current_message += '\n' + line.strip()
-    
-    if current_message:
-        messages.append(current_message.strip())
-        dates.append(current_date)
-        users.append(current_user)
-            
+
+            full_datetime = f"{current_date} {time}:00"
+            dates.append(full_datetime)
+            users.append(user)
+            messages.append(message)
+        else:
+            # 라인이 메시지 패턴과 일치하지 않으면 이전 메시지에 추가
+            if messages:
+                messages[-1] += '\n' + line.strip()
+
     df = pd.DataFrame({
         'Date': dates,
         'User': users,
         'Message': messages
     })
     return df
-
     
 # main 함수 수정
 def main():
@@ -103,28 +85,18 @@ def main():
     uploaded_file = st.file_uploader("카카오톡에서 받은 CSV 또는 TXT 파일을 업로드하세요.", type=["csv", "txt"])
 
     messages = []
+
     if uploaded_file:
+        # 파일 확장자에 따라 처리 방식 변경
         if uploaded_file.name.endswith('.csv'):
             df = pd.read_csv(uploaded_file, dtype={"Message": str})
         elif uploaded_file.name.endswith('.txt'):
+            # TXT 파일을 읽어서 전처리
             file_contents = uploaded_file.getvalue().decode("utf-8")
             df = process_chat_with_formatted_date_and_seconds(file_contents)
             
+            # 'Message' 열의 모든 데이터를 문자열로 변환
             df['Message'] = df['Message'].astype(str)
-            
-            # 날짜 형식 변경
-            df['Date'] = pd.to_datetime(df['Date'])
-            df['Date'] = df['Date'].dt.strftime('%m/%d')
-            
-            # #독서인증 카운팅
-            df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in x else 0)
-            
-            # 디버깅을 위한 출력
-            print("모든 메시지:")
-            print(df[['Date', 'User', 'Message', 'cnt']])
-            
-            print("\n'#독서인증'이 포함된 메시지:")
-            print(df[df['cnt'] == 1][['Date', 'User', 'Message']])
             
         # 'Unnamed: 0' 열 제거
         if 'Unnamed: 0' in df.columns:
@@ -133,12 +105,18 @@ def main():
         # '오픈채팅봇' 제외
         df = df[df['User'] != '오픈채팅봇']
 
+        # 날짜 형식 변경
+        start_date = pd.to_datetime("2024-01-22") # 여기서 날짜를 설정하세요
+        df['Date'] = pd.to_datetime(df['Date'])
+        df = df[df['Date'] >= start_date]
+        df['Date'] = df['Date'].dt.strftime('%m/%d')
 
-        
-        # 어제의 메시지 중 #독서인증이 포함된 메시지 필터링
+        # Message에서 #독서인증 단어가 있는지 확인하고 cnt 컬럼 생성
+        df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in str(x) else 0)
+
+        # 어제의 메시지 중 #인증이 포함되어 있고 150자가 넘는 메시지 필터링
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
-        yesterday_messages = df[(df['Date'] == yesterday) & (df['cnt'] == 1)]
-        
+        yesterday_messages = df[(df['Date'] == yesterday) & (df['cnt'] == 1) & (df['Message'].str.len() > 50)]
         yesterday_messages_list = yesterday_messages['Message'].tolist()
         if len(yesterday_messages_list) >= 5:
             random_selected_messages = random.sample(yesterday_messages_list, 5)
