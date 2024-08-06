@@ -4,7 +4,6 @@ import pandas as pd
 from datetime import datetime, timedelta
 import re
 
-
 # 추가된 함수: txt 파일을 csv 형식으로 변환하는 함수
 def process_chat_with_formatted_date_and_seconds(file_contents):
     lines = file_contents.split('\n')
@@ -67,7 +66,6 @@ def main():
         st.subheader("✡️조만장자가 될 사람들의 모임")
         st.caption("👀트릴리온이 궁금해? : [링크](https://blog.naver.com/yoo1104/223322531413)")
 
-
         st.header("만든 사람")
         st.markdown("😄 트릴리온 커뮤니티 리더 주현영")
         st.markdown("❤️ 트릴리온 인스타 : [링크](https://www.instagram.com/trillion_union/)")
@@ -78,7 +76,6 @@ def main():
 
         st.header("열일한 노예")
         st.markdown("👽 Chat GPT")
-
 
     # CSV와 TXT 파일 업로드 지원
     uploaded_file = st.file_uploader("카카오톡에서 받은 CSV 또는 TXT 파일을 업로드하세요.", type=["csv", "txt"])
@@ -110,8 +107,8 @@ def main():
         df = df[df['Date'] >= start_date]
         df['Date'] = df['Date'].dt.strftime('%m/%d')
 
-        # Message에서 #독서인증 단어가 있는지 확인하고 cnt 컬럼 생성
-        df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in str(x) else 0)
+        # Message에서 #독서인증 단어가 있는지 확인하고 cnt 컬럼 생성 (수정된 부분)
+        df['cnt'] = df['Message'].apply(lambda x: 1 if re.search(r'#독서인증', x, re.IGNORECASE) is not None else 0)
 
         # 어제의 메시지 중 #인증이 포함되어 있고 150자가 넘는 메시지 필터링
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
@@ -213,7 +210,6 @@ def main():
         final_result_exercise_certification.fillna(0, inplace=True)
 
 
-            
         # 버튼을 위한 열 생성
         col1, col2, col3, col4 = st.columns(4)
         
@@ -226,8 +222,6 @@ def main():
             declaration_button = st.button('선언하기')
         with col4:
             weekly_mission_button = st.button('주간미션')
-
-
 
         # 독서인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         if daily_mission_button:
@@ -252,6 +246,7 @@ def main():
             st.markdown("\n\n", unsafe_allow_html=True)
             st.markdown("\n\n", unsafe_allow_html=True)
 
+        
         # 숏폼인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         if exercise_certification_button:
             messages = []
