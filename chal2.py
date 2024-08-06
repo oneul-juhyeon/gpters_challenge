@@ -50,7 +50,7 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
                 time = '00' + time[time.find(':'):]
             
             current_message = message
-        elif current_message:  # 여러 줄 메시지 처리
+        elif current_message:
             current_message += '\n' + line.strip()
     
     if current_message:
@@ -64,6 +64,7 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
         'Message': messages
     })
     return df
+
     
 # main 함수 수정
 def main():
@@ -110,10 +111,17 @@ def main():
             df['Message'] = df['Message'].astype(str)
             
             # 날짜 형식 변경
-            df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%m/%d')
+            start_date = pd.to_datetime("2024-01-22") # 여기서 날짜를 설정하세요
+            df['Date'] = pd.to_datetime(df['Date'])
+            df = df[df['Date'] >= start_date]
+            df['Date'] = df['Date'].dt.strftime('%m/%d')
             
-            # '#독서인증' 카운팅
-            df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in x else 0)
+            # Message에서 #독서인증 단어가 있는지 확인하고 cnt 컬럼 생성
+            df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in str(x) else 0)
+            
+            # 디버깅을 위한 출력
+            print("'#독서인증'이 포함된 메시지:")
+            print(df[df['cnt'] == 1][['Date', 'User', 'Message']])
             
         # 'Unnamed: 0' 열 제거
         if 'Unnamed: 0' in df.columns:
