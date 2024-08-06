@@ -124,9 +124,10 @@ def main():
 
 
         
-        # 어제의 메시지 중 #인증이 포함되어 있고 150자가 넘는 메시지 필터링
+        # 어제의 메시지 중 #독서인증이 포함된 메시지 필터링
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
-        yesterday_messages = df[(df['Date'] == yesterday) & (df['cnt'] == 1) & (df['Message'].str.len() > 50)]
+        yesterday_messages = df[(df['Date'] == yesterday) & (df['cnt'] == 1)]
+        
         yesterday_messages_list = yesterday_messages['Message'].tolist()
         if len(yesterday_messages_list) >= 5:
             random_selected_messages = random.sample(yesterday_messages_list, 5)
