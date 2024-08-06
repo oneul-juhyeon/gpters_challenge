@@ -31,7 +31,7 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
             continue
 
         message_match = message_pattern.match(line)
-        if message_match and current_date:
+        if message_match:
             if current_message:
                 messages.append(current_message.strip())
                 dates.append(current_date)
@@ -43,7 +43,6 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
             time = message_match.group(3)
             message = message_match.group(4)
 
-            # 한국어 오전/오후를 24시간 형식으로 변환
             if am_pm == '오후' and time.split(':')[0] != '12':
                 hour = str(int(time.split(':')[0]) + 12)
                 time = hour + time[time.find(':'):]
@@ -52,11 +51,9 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
             
             current_message = message
         else:
-            # 라인이 메시지 패턴과 일치하지 않으면 현재 메시지에 추가
             if current_message:
                 current_message += '\n' + line.strip()
     
-    # 마지막 메시지가 있으면 추가
     if current_message:
         messages.append(current_message.strip())
         dates.append(current_date)
@@ -68,7 +65,6 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
         'Message': messages
     })
     return df
-
 
 # main 함수 수정
 def main():
@@ -128,7 +124,7 @@ def main():
         df['Date'] = df['Date'].dt.strftime('%m/%d')
 
         # main 함수 내 '#독서인증' 태그 인식 로직 수정
-        df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in x else 0)
+        df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in str(x) else 0)
         
         # 어제의 메시지 중 #인증이 포함되어 있고 150자가 넘는 메시지 필터링
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
