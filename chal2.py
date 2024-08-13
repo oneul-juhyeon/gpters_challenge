@@ -4,7 +4,8 @@ import pandas as pd
 from datetime import datetime, timedelta
 import re
 
-# txt 파일을 처리하여 날짜와 초까지 포맷팅하는 함수
+
+# 추가된 함수: txt 파일을 csv 형식으로 변환하는 함수
 def process_chat_with_formatted_date_and_seconds(file_contents):
     lines = file_contents.split('\n')
     dates = []
@@ -29,22 +30,22 @@ def process_chat_with_formatted_date_and_seconds(file_contents):
             time = message_match.group(3)
             message = message_match.group(4)
 
-            # 오전/오후를 24시간 형식으로 변환
+            # Convert Korean AM/PM to 24-hour format
             if am_pm == '오후' and time.split(':')[0] != '12':
                 hour = str(int(time.split(':')[0]) + 12)
                 time = hour + time[time.find(':'):]
             elif am_pm == '오전' and time.split(':')[0] == '12':
                 time = '00' + time[time.find(':'):]
-
-            full_datetime = f"{current_date} {time}:00"
+            
+            full_datetime = f"{current_date} {time}"
             dates.append(full_datetime)
             users.append(user)
             messages.append(message)
         else:
-            # 라인이 메시지 패턴과 일치하지 않으면 이전 메시지에 추가
+            # If the line doesn't match the message pattern, append it to the previous message
             if messages:
                 messages[-1] += '\n' + line.strip()
-
+            
     df = pd.DataFrame({
         'Date': dates,
         'User': users,
@@ -112,7 +113,7 @@ def main():
         # Message에서 #독서인증 단어가 있는지 확인하고 cnt 컬럼 생성
         df['cnt'] = df['Message'].apply(lambda x: 1 if '#독서인증' in str(x) else 0)
 
-        # 어제의 메시지 중 #독서인증이 포함되어 있고 50자가 넘는 메시지 필터링
+        # 어제의 메시지 중 #인증이 포함되어 있고 150자가 넘는 메시지 필터링
         yesterday = (datetime.now() - timedelta(days=1)).strftime('%m/%d')
         yesterday_messages = df[(df['Date'] == yesterday) & (df['cnt'] == 1) & (df['Message'].str.len() > 50)]
         yesterday_messages_list = yesterday_messages['Message'].tolist()
@@ -149,10 +150,12 @@ def main():
         final_result_df = final_result_df[column_order]
         final_result_df.fillna(0, inplace=True)
 
+
         ## Message에서 #숏폼인증, #주간미션, #선언하기 태그별로 존재 여부를 확인하고 카운트하는 함수 추가
         df['Declaration_cnt'] = df['Message'].apply(lambda x: 1 if '#선언하기' in str(x) else 0)
         df['WeeklyMission_cnt'] = df['Message'].apply(lambda x: 1 if '#주간미션' in str(x) else 0)
         df['ExerciseCertification_cnt'] = df['Message'].apply(lambda x: 1 if '#숏폼인증' in str(x) else 0)
+
 
         # 선언하기 날짜별 및 사용자별 카운트 집계
         result_declaration = df.groupby(['Date', 'User'])['Declaration_cnt'].sum().reset_index()
@@ -209,6 +212,7 @@ def main():
         final_result_exercise_certification = final_result_exercise_certification[column_order_exercise_certification]
         final_result_exercise_certification.fillna(0, inplace=True)
 
+
             
         # 버튼을 위한 열 생성
         col1, col2, col3, col4 = st.columns(4)
@@ -222,6 +226,8 @@ def main():
             declaration_button = st.button('선언하기')
         with col4:
             weekly_mission_button = st.button('주간미션')
+
+
 
         # 독서인증 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         if daily_mission_button:
@@ -279,8 +285,8 @@ def main():
                 st.markdown(message)
                 
             # 표와 메시지 사이의 줄바꿈 추가
-            st.markdown("\n\n", unsafe_allow html=True)
-            st.markdown("\n\n", unsafe_allow html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
             
             # 전체 결과 보기
             st.subheader("선언하기 전체 결과 보기")
@@ -289,9 +295,9 @@ def main():
             st.dataframe(final_result_declaration.reset_index(drop=True))
     
             # 줄바꿈 추가
-            st.markdown("\n\n", unsafe_allow html=True)
-            st.markdown("\n\n", unsafe_allow html=True)
-            st.markdown("\n\n", unsafe_allow html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
         
         # 주간미션 결과 표시 (index=False로 설정하여 인덱스를 표시하지 않음)
         if weekly_mission_button:
@@ -302,8 +308,8 @@ def main():
                 st.markdown(message)
                 
             # 표와 메시지 사이의 줄바꿈 추가
-            st.markdown("\n\n", unsafe_allow html=True)
-            st.markdown("\n\n", unsafe_allow html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
+            st.markdown("\n\n", unsafe_allow_html=True)
             
             # 전체 결과 보기
             st.subheader("주간미션 전체 결과 보기")
@@ -313,3 +319,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
